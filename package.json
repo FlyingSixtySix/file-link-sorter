@@ -1,0 +1,8 @@
+{
+  "name": "file-link-sorter",
+  "description": "Sorts all URLs found in input/ files to their corresponding output domain .json (configured in config.json), or to unknown.json.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Andrew Black",
+  "license": "ISC"
+}

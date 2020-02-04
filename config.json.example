@@ -1,0 +1,25 @@
+{
+  "inputDir": "input",
+  "outputDir": "output",
+  "includeInputFileExtension": true,
+  "overwriteOutput": false,
+  "domains": [
+    "bandcamp.com",
+    "docs.google.com",
+    "drive.google.com",
+    "mediafire.com",
+    "mega.co.nz",
+    "mega.nz",
+    "api.soundcloud.com",
+    "tumblr.com",
+    "wordpress.com",
+    "blogger.com",
+    "patreon.com",
+    "twitter.com",
+    "goo.gl",
+    "cdn.discordapp.com",
+    "discord.gg",
+    "bit.ly",
+    "dropbox.com"
+  ]
+}
