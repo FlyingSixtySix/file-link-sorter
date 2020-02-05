@@ -54,15 +54,16 @@ function main () {
       }
       // If the domain hostname is in the sorting list
       const fileName = config.includeInputFileExtension ? inputFile : path.basename(inputFile, path.extname(inputFile));
-      if (config.domains.includes(hostname)) {
+      const generalDomain = config.domains.find(domain => hostname.includes(domain));
+      if (generalDomain != null) {
         // If this is a new input file for the domain hostname, init an array
-        if (!Array.isArray(buffer[hostname][fileName])) {
-          buffer[hostname][fileName] = [];
+        if (!Array.isArray(buffer[generalDomain][fileName])) {
+          buffer[generalDomain][fileName] = [];
         }
         // Make sure there are no duplicate entries
-        if (!buffer[hostname][fileName].includes(href)) {
+        if (!buffer[generalDomain][fileName].includes(href)) {
           knownDomains++;
-          buffer[hostname][fileName].push(href);
+          buffer[generalDomain][fileName].push(href);
         }
       } else {
         // If the domain isn't in the sorting list, put in the unknown array
