@@ -6,6 +6,21 @@ const config = require('./config');
 
 const urlRegex = /https?:\/\/(?:www\.)?([-\w\d@:%._+~#=]{1,256}\.[\w\d()]{1,6})\b(?:[-\w\d()@:%_+.~#?&/=!]*)/g;
 
+function walk (dir) {
+  let res = [];
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat != null && stat.isDirectory()) {
+      res = res.concat(walk(filePath));
+    } else {
+      res.push(filePath);
+    }
+  }
+  return res;
+}
+
 function main () {
   const buffer = {
     unknown: {}
@@ -28,9 +43,20 @@ function main () {
   // Count of known and unknown domains
   let knownDomains = 0;
   let unknownDomains = 0;
+  // Count of already-existing domains
+  let existingDomains = 0;
 
+  // For some reason, the input and output dir creations have to be in their
+  // own try/catch blocks - otherwise the output dir wouldn't be created
   try {
     fs.mkdirSync(config.inputDir);
+  } catch (err) {
+    if (err.code !== 'EEXIST') {
+      throw err;
+    }
+  }
+
+  try {
     fs.mkdirSync(config.outputDir);
   } catch (err) {
     if (err.code !== 'EEXIST') {
@@ -38,9 +64,9 @@ function main () {
     }
   }
 
-  const inputFiles = fs.readdirSync(config.inputDir);
+  const inputFiles = walk(config.inputDir); // fs.readdirSync(config.inputDir);
   for (const inputFile of inputFiles) {
-    const file = fs.readFileSync(path.join(config.inputDir, inputFile), 'utf8');
+    const file = fs.readFileSync(inputFile, 'utf8');
     const matches = [...file.matchAll(urlRegex)];
     console.log(`${inputFile} has ${matches.length} links`);
     for (const [ href, hostname ] of matches) {
@@ -64,6 +90,8 @@ function main () {
         if (!buffer[generalDomain][fileName].includes(href)) {
           knownDomains++;
           buffer[generalDomain][fileName].push(href);
+        } else {
+          existingDomains++;
         }
       } else {
         // If the domain isn't in the sorting list, put in the unknown array
@@ -74,17 +102,19 @@ function main () {
         if (!buffer.unknown[fileName].includes(href)) {
           unknownDomains++;
           buffer.unknown[fileName].push(href);
+        } else {
+          existingDomains++;
         }
       }
     }
   }
-  console.log(`\nCalculated ${knownDomains} known domains and ${unknownDomains} unknown domains.`);
+  console.log(`\nCalculated ${knownDomains} known domains, ${unknownDomains} unknown domains, and ${existingDomains} already existing domains.`);
   for (const { input, href } of brokenLinks) {
     console.error(`\n--- FOUND ${brokenLinks.length} BROKEN LINK(S) ---`);
     console.error(`${input}: ${href}`);
   }
   for (const domain of Object.keys(buffer)) {
-    fs.writeFileSync(path.join('output', domain + '.json'), JSON.stringify(buffer[domain], null, 2));
+    fs.writeFileSync(path.join(config.outputDir, domain + '.json'), JSON.stringify(buffer[domain], null, 2));
   }
 }
 
