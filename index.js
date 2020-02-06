@@ -69,13 +69,15 @@ function main () {
     const file = fs.readFileSync(inputFile, 'utf8');
     const matches = [...file.matchAll(urlRegex)];
     console.log(`${inputFile} has ${matches.length} links`);
-    for (const [ href, hostname ] of matches) {
+    for (let [ href, hostname ] of matches) {
+      href = href.replace(/\/$/, '');
       // URL validation
       // Unknown performance impact
+      let url;
       try {
-        new URL(href);
+        url = new URL(href);
       } catch (err) {
-        brokenLinks.push({ input: inputFile, href });
+        brokenLinks.push({ input: inputFile, href: url.href });
         continue;
       }
       // If the domain hostname is in the sorting list
@@ -87,9 +89,9 @@ function main () {
           buffer[generalDomain][fileName] = [];
         }
         // Make sure there are no duplicate entries
-        if (!buffer[generalDomain][fileName].includes(href)) {
+        if (!buffer[generalDomain][fileName].includes(url.href)) {
           knownDomains++;
-          buffer[generalDomain][fileName].push(href);
+          buffer[generalDomain][fileName].push(url.href);
         } else {
           existingDomains++;
         }
@@ -99,9 +101,9 @@ function main () {
           buffer.unknown[fileName] = [];
         }
         // Make sure there are no duplicate entries
-        if (!buffer.unknown[fileName].includes(href)) {
+        if (!buffer.unknown[fileName].includes(url.href)) {
           unknownDomains++;
-          buffer.unknown[fileName].push(href);
+          buffer.unknown[fileName].push(url.href);
         } else {
           existingDomains++;
         }
