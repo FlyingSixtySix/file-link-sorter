@@ -77,7 +77,7 @@ function main () {
       try {
         url = new URL(href);
       } catch (err) {
-        brokenLinks.push({ input: inputFile, href: url.href });
+        brokenLinks.push({ input: inputFile, href: href });
         continue;
       }
       // If the domain hostname is in the sorting list
