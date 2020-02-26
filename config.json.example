@@ -2,6 +2,7 @@
   "inputDir": "input",
   "outputDir": "output",
   "includeInputFileExtension": true,
+  "trackNewlyAdded": true,
   "overwriteOutput": false,
   "domains": [
     "bandcamp.com",

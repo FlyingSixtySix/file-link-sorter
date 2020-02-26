@@ -25,6 +25,7 @@ function main () {
   const buffer = {
     unknown: {}
   };
+  if (config.trackNewlyAdded) buffer.unknown.newlyAdded = [];
   config.domains.forEach(domain => {
     buffer[domain] = {};
     // Try to open pre-existing output files so we can append to them
@@ -38,6 +39,7 @@ function main () {
         }
       }
     }
+    if (config.trackNewlyAdded) buffer[domain].newlyAdded = [];
   });
   const brokenLinks = [];
   // Count of known and unknown domains
@@ -92,6 +94,7 @@ function main () {
         if (!buffer[generalDomain][fileName].includes(url.href)) {
           knownDomains++;
           buffer[generalDomain][fileName].push(url.href);
+          if (config.trackNewlyAdded) buffer[generalDomain].newlyAdded.push(url.href);
         } else {
           existingDomains++;
         }
@@ -104,6 +107,7 @@ function main () {
         if (!buffer.unknown[fileName].includes(url.href)) {
           unknownDomains++;
           buffer.unknown[fileName].push(url.href);
+          if (config.trackNewlyAdded) buffer.unknown.newlyAdded.push(url.href);
         } else {
           existingDomains++;
         }
