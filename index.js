@@ -2,7 +2,15 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const config = require('./config');
+const config = require('./config')
+
+// NOTE: This handles file-link-sorter [input] [output].
+if (process.argv.length === 3) {
+  config.inputDir = path.normalize(process.argv[2]);
+} else if (process.argv.length === 4) {
+  config.inputDir = path.normalize(process.argv[2]);
+  config.outputDir = path.normalize(process.argv[3]);
+}
 
 const urlRegex = /https?:\/\/(?:www\.)?([-\w\d@:%._+~#=]{1,256}\.[\w\d()]{1,6})\b(?:[-\w\d()@:%_+.~#?&/=!]*)/g;
 
